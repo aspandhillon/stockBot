@@ -8,6 +8,7 @@ export const fetchComparisonData = createAsyncThunk(
     try {
       const response = await fetch(`http://localhost:5000/api/compare_stocks?tickers=${tickers.join(',')}`);
       const data = await response.json();
+      console.log("1");
 
       if (!response.ok) {
         // If the server responds with an error status (e.g., 400, 500)
