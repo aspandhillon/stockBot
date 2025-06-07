@@ -1,40 +1,47 @@
-import React, { useState } from 'react';
+// src/App.jsx
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux'; // Import Redux hooks
+import { setTickersInput, fetchComparisonData } from './features/stock/stockSlice'; // Import actions and thunk
 
 function App() {
-  const [tickersInput, setTickersInput] = useState('');
-  const [comparisonResults, setComparisonResults] = useState(null); // This will hold the response from /api/compare_stocks
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const dispatch = useDispatch(); // Get the dispatch function
+
+  // Select state from the Redux store
+  const tickersInput = useSelector((state) => state.stock.tickersInput);
+  const comparisonResults = useSelector((state) => state.stock.comparisonResults);
+  const loading = useSelector((state) => state.stock.loading);
+  const error = useSelector((state) => state.stock.error);
+
+  // --- NEW LOGIC FOR DYNAMIC HEADING ---
+  // Derive the count of tickers from the input string
+  const getTickerCount = () => {
+    const tickers = tickersInput.split(',').map(t => t.trim()).filter(t => t);
+    return tickers.length;
+  };
+
+  const tickerCount = getTickerCount();
+  const chartHeading =
+    tickerCount > 2
+      ? "Combined Price Chart"
+      : tickerCount > 0 // For 1 or 2 tickers, let's just call it a "Price Chart" or "Price Chart(s)"
+        ? `${tickerCount === 1 ? 'Price Chart' : 'Price Charts'}`
+        : "Price Chart"; // Default if no tickers are input yet
+  // --- END NEW LOGIC ---
+
+  const handleInputChange = (e) => {
+    dispatch(setTickersInput(e.target.value)); // Dispatch action to update input state
+  };
 
   const handleCompareSubmit = async (event) => {
     event.preventDefault();
-    setLoading(true);
-    setComparisonResults(null); // Clear previous results
-    setError(null);
 
-    const tickers = tickersInput.split(',').map(t => t.trim()).filter(t => t); // Split and clean
+    const tickers = tickersInput.split(',').map(t => t.trim()).filter(t => t);
     if (tickers.length === 0) {
-      setError("Please enter at least one ticker.");
-      setLoading(false);
-      return;
+      return; // No need to dispatch if no tickers
     }
 
-    try {
-      // ONLY make the call to the comparison API endpoint
-      const response = await fetch(`http://localhost:5000/api/compare_stocks?tickers=${tickers.join(',')}`);
-      const data = await response.json();
-
-      if (response.ok) {
-        setComparisonResults(data); // Store the entire response
-      } else {
-        setError(data.error || 'An error occurred during comparison.');
-      }
-    } catch (err) {
-      setError('Failed to connect to the comparison service. Is the Flask backend running?');
-      console.error('Fetch error:', err);
-    } finally {
-      setLoading(false);
-    }
+    // Dispatch the async thunk to fetch data
+    dispatch(fetchComparisonData(tickers));
   };
 
   return (
@@ -43,8 +50,8 @@ function App() {
       <form onSubmit={handleCompareSubmit} style={{ marginBottom: '20px' }}>
         <input
           type="text"
-          value={tickersInput}
-          onChange={(e) => setTickersInput(e.target.value)}
+          value={tickersInput} // Value now comes from Redux store
+          onChange={handleInputChange} // Dispatch action on change
           placeholder="Enter tickers (e.g., TSLA, GOOGL, AAPL)"
           required
           style={{ padding: '10px', marginRight: '10px', fontSize: '16px', width: '300px' }}
@@ -60,7 +67,8 @@ function App() {
           {/* Display the combined comparison plot */}
           {comparisonResults.comparison_plot_url && (
             <div style={{ marginBottom: '30px' }}>
-              <h3>Combined Price Chart:</h3>
+              {/* Use the dynamic heading here */}
+              <h3>{chartHeading}:</h3>
               <img
                 src={`http://localhost:5000${comparisonResults.comparison_plot_url}`}
                 alt="Stock Comparison Chart"
@@ -70,7 +78,6 @@ function App() {
           )}
 
           {/* Display individual analysis results (text only) */}
-          {/* This section ONLY iterates through analysis_results to display text */}
           {/* {comparisonResults.analysis_results && (
             <div>
               <h3>Individual Analysis:</h3>
