@@ -12,10 +12,7 @@ import base64
 app = Flask(__name__)
 
 # --- PRODUCTION CORS SETUP ---
-# IMPORTANT: Replace 'https://your-react-app-url.com' with the actual URL of your deployed React frontend.
-# For development, you can add "http://localhost:5173" (or whatever port your React dev server uses)
-# to the list of allowed origins if you need to test locally while this app is deployed.
-ALLOWED_ORIGINS = ["http://localhost:5173", "https://your-react-app-url.com"] # Add your deployed frontend URL here
+ALLOWED_ORIGINS = ["http://localhost:5173", "https://stockbot-frontend.onrender.com/"] # Add your deployed frontend URL here
 CORS(app, resources={r"/api/*": {"origins": ALLOWED_ORIGINS}})
 
 
