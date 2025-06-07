@@ -6,7 +6,7 @@ export const fetchComparisonData = createAsyncThunk(
   'stock/fetchComparisonData',
   async (tickers, { rejectWithValue }) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/compare_stocks?tickers=${tickers.join(',')}`);
+      const response = await fetch(`https://stockbot-backend-gkaw.onrender.com/api/compare_stocks?tickers=${tickers.join(',')}`);
       const data = await response.json();
       console.log("1");
 
@@ -15,8 +15,10 @@ export const fetchComparisonData = createAsyncThunk(
         return rejectWithValue(data.error || 'Failed to fetch comparison data.');
       }
       return data;
-    } catch (error) {
+    }
+    catch (error){
       // Handle network errors
+      console.error('Network error:', error);
       return rejectWithValue('Network error: Could not connect to the backend.');
     }
   }

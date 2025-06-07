@@ -98,7 +98,7 @@ function App() {
             )}
 
             {/* Display individual analysis results (text only, no separate plots) */}
-            {comparisonResults.analysis_results && (
+            {/* {comparisonResults.analysis_results && (
               <div>
                 <h3 style={{ color: '#0056b3', marginBottom: '15px' }}>Individual Analysis:</h3>
                 {comparisonResults.analysis_results.map((result, index) => (
@@ -119,7 +119,7 @@ function App() {
                   </div>
                 ))}
               </div>
-            )}
+            )} */}
             {/* Message if no results or plot were available */}
             {!comparisonResults.comparison_plot_url && !comparisonResults.analysis_results && (
                   <p>No results or plot available for the entered tickers. Please check ticker symbols or try again.</p>
