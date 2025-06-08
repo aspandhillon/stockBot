@@ -6,6 +6,7 @@ import time # To add delays for rate limiting if needed
 # --- Configuration ---
 # You'd typically get a list of tickers from an API or a pre-defined file
 # For demonstration, let's use a small list of well-known tech stocks
+
 TICKERS_TO_ANALYZE = ["AAPL", "MSFT", "GOOGL", "AMZN", "NVDA", "TSLA", "META", "NFLX", "JPM", "V", "PG", "KO"]
 DATA_PERIOD = "6mo" # For weekly data, 6 months should be enough for 14-period RSI
 DATA_INTERVAL = "1wk" # Weekly data for longer-term signals

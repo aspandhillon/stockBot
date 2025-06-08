@@ -1,23 +1,26 @@
 // src/features/stock/stockSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
+const BASE_URL =
+  import.meta.env.MODE === 'development'
+    ? 'http://localhost:5000' 
+    : 'https://stockbot-backend-gkaw.onrender.com';
+
 // Define an async thunk for fetching comparison data
 export const fetchComparisonData = createAsyncThunk(
   'stock/fetchComparisonData',
   async (tickers, { rejectWithValue }) => {
     try {
-      const response = await fetch(`https://stockbot-backend-gkaw.onrender.com/api/compare_stocks?tickers=${tickers.join(',')}`);
+      const response = await fetch(
+        `${BASE_URL}/api/compare_stocks?tickers=${tickers.join(',')}`
+      );
       const data = await response.json();
-      console.log("1");
 
       if (!response.ok) {
-        // If the server responds with an error status (e.g., 400, 500)
         return rejectWithValue(data.error || 'Failed to fetch comparison data.');
       }
       return data;
-    }
-    catch (error){
-      // Handle network errors
+    } catch (error) {
       console.error('Network error:', error);
       return rejectWithValue('Network error: Could not connect to the backend.');
     }
